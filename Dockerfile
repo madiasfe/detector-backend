@@ -4,8 +4,10 @@ FROM python:3.11-slim
 # Define o diretório de trabalho dentro do container
 WORKDIR /app
 
-# Instala a dependência do sistema que estava em falta (libgl1)
-RUN apt-get update && apt-get install -y libgl1-mesa-glx
+# --- CORREÇÃO IMPORTANTE ---
+# Instala as dependências do sistema que estavam em falta (libgl1 e libgthread)
+# antes de instalar as bibliotecas Python.
+RUN apt-get update && apt-get install -y libgl1-mesa-glx libglib2.0-0
 
 # Copia o arquivo de requisitos para dentro do container
 COPY requirements.txt .
