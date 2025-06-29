@@ -1,11 +1,13 @@
 # backend_app.py
 from flask import Flask, request, jsonify, abort
+from flask_cors import CORS # Importa a biblioteca CORS
 from ultralytics import YOLO
 import rasterio
 import os
 import werkzeug.utils
 
 app = Flask(__name__)
+CORS(app) # Ativa o CORS para toda a aplicação
 
 # Tenta carregar o modelo. Se falhar, a aplicação não iniciará, o que é bom para depuração.
 try:
@@ -14,14 +16,12 @@ try:
     print("✅ Modelo carregado com sucesso.")
 except Exception as e:
     print(f"❌ Erro fatal ao carregar o modelo: {e}")
-    # Impede que a aplicação continue se o modelo não puder ser carregado.
     raise e
 
-# --- NOVA ROTA DE HEALTH CHECK ---
-# Responde a pedidos na raiz da URL para dizer ao Cloud Run que o serviço está saudável.
+# Rota de health check para o Google Cloud
 @app.route('/', methods=['GET'])
 def health_check():
-    return "Backend do Detector de Hotspots está online e pronto para receber análises no endpoint /analyze_geotiff.", 200
+    return "Backend do Detector de Hotspots está online.", 200
 
 @app.route('/analyze_geotiff', methods=['POST'])
 def analyze():
@@ -66,5 +66,4 @@ def analyze():
     return jsonify(detections_data)
 
 if __name__ == '__main__':
-    # Esta parte é para testes locais. O Gunicorn, usado na produção, ignora isto.
     app.run(host='0.0.0.0', port=8080)
