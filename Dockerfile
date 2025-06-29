@@ -19,4 +19,4 @@ EXPOSE 80
 
 # Comando para iniciar a aplicação quando o container for executado
 # Usamos o 'gunicorn' que é um servidor web Python robusto para produção
-CMD ["gunicorn", "--bind", "0.0.0.0:80", "backend_app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "backend_app:app"]
