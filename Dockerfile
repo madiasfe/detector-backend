@@ -8,15 +8,12 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Instala as bibliotecas Python
-# O '--no-cache-dir' é uma boa prática para manter a imagem pequena
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copia todos os arquivos do seu projeto (app, best.pt) para dentro do container
 COPY . .
 
-# Expõe a porta 80, que o Azure App Service usará para se comunicar
-EXPOSE 80
-
 # Comando para iniciar a aplicação quando o container for executado
-# Usamos o 'gunicorn' que é um servidor web Python robusto para produção
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "backend_app:app"]
+# Usa a forma "shell" que permite a substituição da variável de ambiente $PORT.
+# Esta é a correção final para o erro "is not a valid port number".
+CMD exec gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 0 backend_app:app
